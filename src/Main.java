@@ -16,47 +16,99 @@ public class Main
         switch(Constants.Mode)
         {
             case debug:
+                UnitTest.Run();
                 break;
             case normal:
                 // scanner for input
                 Scanner Scan = new Scanner(System.in);
 
-                // intro message
-                String Message = "enter website and press enter or paste newline separated list:";
-                System.out.println(Message);
-
-                // get input line
-                String Input = Scan.nextLine();
-
                 // list of response details
-                ArrayList<GetRequestResponse> Response = new ArrayList<GetRequestResponse>();
+                ArrayList<GetRequestResponse> ResponseList = new ArrayList<GetRequestResponse>();
+                HashMap<Integer, Integer> StatusCodesMap = new HashMap<Integer, Integer>();
 
                 // while still parsing lines
-                while (!Input.isEmpty())
+                while (Scan.hasNextLine())
                 {
+                    // get input line
+                    String Input = Scan.nextLine();
+
+                    // create new response object
+                    GetRequestResponse CurrentResponse = new GetRequestResponse();
+
                     // add new GetRequestResponse to store information in
-                    Response.add( new GetRequestResponse());
+                    ResponseList.add( CurrentResponse);
 
                     // send Get request and populate storing object
-                    BBC_Test.sendGet(Input, Response.get(Response.size() - 1));
+                    BBC_Test.sendGet(Input, CurrentResponse);
 
-                    //System.out.println(Message);
+                    // process code for appearances
+                    int StatusCode = CurrentResponse.GetStatusCode();
 
-                    // get input line
-                    Input = Scan.nextLine();
+                    // check if code is present or not and update map
+                    ProcessCode( StatusCode, StatusCodesMap );
                 }
 
                 // output results
-                for(GetRequestResponse Element : Response)
-                {
-                    System.out.print(Element.toString());
-                }
+                Output( ResponseList, StatusCodesMap );
+
                 break;
         }
     }
 
+    // checks if code is in map
+    private static void ProcessCode( int StatusCode, HashMap<Integer, Integer> StatusCodesMap )
+    {
+        // valid url check
+        if( StatusCode != 0 )
+        {
+            // if one item already found
+            if (StatusCodesMap.containsKey(StatusCode))
+            {
+                // status code exists already
+                StatusCodesMap.put(StatusCode, StatusCodesMap.get(StatusCode) + 1);
+            }
+            else
+            {
+                // new status code
+                StatusCodesMap.put(StatusCode, 1);
+            }
+        }
+    }
+
+    // checks if code is in map
+    private static void Output( ArrayList<GetRequestResponse> Response, HashMap<Integer, Integer> StatusCodesMap )
+    {
+        // output results
+        System.out.println("Results: ");
+        for(GetRequestResponse Element : Response)
+        {
+            System.out.print( Element.toString() );
+        }
+
+        // summary
+        System.out.println("\n\nSummary: ");
+        String Summary = "\n[";
+        Iterator CodesIterator = StatusCodesMap.entrySet().iterator();
+        while (CodesIterator.hasNext())
+        {
+            Map.Entry pair = (Map.Entry)CodesIterator.next();
+            Summary += "\n  {";
+            Summary += "\n      " + CommonFunctions.AddNameValueItem("Status_Code", (Integer)pair.getKey());
+            Summary += "\n      " + CommonFunctions.AddNameValueItem("Number_of_responses", (Integer)pair.getValue(), true);
+            Summary += "\n  }";
+            if( CodesIterator.hasNext() )
+            {
+                Summary += ",";
+            }
+            CodesIterator.remove(); // avoids a ConcurrentModificationException
+        }
+
+        Summary += "\n]";
+        System.out.println(Summary);
+    }
+
     // parse argument list
-    public static void ParseParams( String[] args )
+    private static void ParseParams( String[] args )
     {
         // check for flags
         if( args.length > 0 )
@@ -107,7 +159,7 @@ public class Main
     // process error message
     private void ProcessError( GetRequestResponse Output, final String Website, Exception E )
     {
-        System.err.println( "\nFailed GET request for Url " + Website + "( " + E.toString() + " )!");
+        System.err.println( "Failed GET request for Url " + Website + "( " + E.toString() + " )!");
 
         Output.SetUrl(Website);
         Output.SetError( E.toString() );

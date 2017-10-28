@@ -75,16 +75,16 @@ public class GetRequestResponse
         String Result = new String();
 
         Result += "\n{";
-        Result += AddNameValueItem("Url", FUrl);
+        Result += "\n   " + CommonFunctions.AddNameValueItem("Url", FUrl);
         if( FError.compareTo("") == 0 )
         {
-            Result += AddNameValueItem("Status_Code", FStatusCode );
-            Result += AddNameValueItem("Content_Length", FContentLength);
-            Result += AddNameValueItem("Date", FDate.toString(), true);
+            Result += "\n   " + CommonFunctions.AddNameValueItem("Status_Code", FStatusCode );
+            Result += "\n   " + CommonFunctions.AddNameValueItem("Content_Length", FContentLength);
+            Result += "\n   " + CommonFunctions.AddNameValueItem("Date", FDate.toString(), true);
         }
         else
         {
-            Result += AddNameValueItem("Error", FError, true);
+            Result += "\n   " + CommonFunctions.AddNameValueItem("Error", FError, true);
         }
 
         Result +=  "\n}";
@@ -92,50 +92,7 @@ public class GetRequestResponse
         return Result;
     }
 
-    // add non ending name value pair as json. value is int
-    private String AddNameValueItem( final String Name, final int Value)
-    {
-        return AddNameValueItem( Name, Value, false );
-    }
-
-    // add non ending name value pair as json. value is string
-    private String AddNameValueItem( final String Name, final String Value)
-    {
-        return AddNameValueItem( Name, Value, false );
-    }
-
-    // add name value pair as json. values is string
-    private String AddNameValueItem( final String Name, final String Value, boolean FinalItem)
-    {
-        String Result = new String();
-
-        Result += ("\n  \"" + Name + "\": \"" + Value + "\"");
-        Result += AddComma( FinalItem );
-
-        return Result;
-    }
-
-    // add name value pair as json. values is int
-    private String AddNameValueItem( final String Name, final int Value, boolean FinalItem )
-    {
-        String Result = new String();
-
-        Result += "\n  \"" + Name + "\": " + Value;
-        Result += AddComma( FinalItem );
-
-        return Result;
-    }
-
-    // return comma based on param
-    private String AddComma( boolean FinalElement )
-    {
-        if( !FinalElement )
-        {
-            return ",";
-        }
-        return "";
-    }
-
+    // private variables
     private String FUrl;
     private int FStatusCode;
     private int FContentLength;
