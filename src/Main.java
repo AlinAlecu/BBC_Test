@@ -1,13 +1,6 @@
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Scanner;
-
-import javax.net.ssl.HttpsURLConnection;
+import java.util.*;
 
 public class Main
 {
@@ -35,17 +28,17 @@ public class Main
                 // get input line
                 String Input = Scan.nextLine();
 
-                // arraylist of json document pe url processing
-                ArrayList<StringBuffer> Output = new ArrayList<StringBuffer>();
+                // list of response details
+                ArrayList<GetRequestResponse> Response = new ArrayList<GetRequestResponse>();
 
                 // while still parsing lines
                 while (!Input.isEmpty())
                 {
-                    // add new strinbuffer to store information in
-                    Output.add( new StringBuffer());
+                    // add new GetRequestResponse to store information in
+                    Response.add( new GetRequestResponse());
 
-                    // send Get request and populate string buffer
-                    BBC_Test.sendGet(Input, Output.get(Output.size() - 1));
+                    // send Get request and populate storing object
+                    BBC_Test.sendGet(Input, Response.get(Response.size() - 1));
 
                     //System.out.println(Message);
 
@@ -54,7 +47,7 @@ public class Main
                 }
 
                 // output results
-                for(StringBuffer Element : Output)
+                for(GetRequestResponse Element : Response)
                 {
                     System.out.print(Element.toString());
                 }
@@ -79,9 +72,10 @@ public class Main
     }
 
     // HTTP GET request
-    private void sendGet( String Website, StringBuffer Output )
+    private void sendGet( String Website, GetRequestResponse Output )
     {
-        try {
+        try
+        {
             URL Obj = new URL(Website);
             HttpURLConnection Con = (HttpURLConnection) Obj.openConnection();
 
@@ -97,18 +91,10 @@ public class Main
             long DateValue = Con.getDate();
             Date TimeStamp = new Date(DateValue);
 
-            // create element for site
-            StringBuffer Element = new StringBuffer();
-
-            Element.append("\n{");
-            AddNameValueItem("Url", Website, Element);
-            AddNameValueItem("Status_Code", ResponseCode, Element);
-            AddNameValueItem("Content_Length", ContentLength, Element);
-            AddNameValueItem("Date", TimeStamp.toString(), Element, true);
-            Element.append("\n}");
-
-            // add to document
-            Output.append(Element);
+            Output.SetUrl( Website );
+            Output.SetStatusCode( ResponseCode );
+            Output.SetContentLength( ContentLength );
+            Output.SetDate( TimeStamp );
         }
         // could do manual url validation but we have the api doing this for us.
         // we just catch and report the errors
@@ -118,54 +104,12 @@ public class Main
         }
     }
 
-    // add non ending name value pair as json. value is int
-    private void AddNameValueItem( final String Name, final int Value, StringBuffer Out)
-    {
-        AddNameValueItem( Name, Value, Out, false );
-    }
-
-    // add non ending name value pair as json. value is string
-    private void AddNameValueItem( final String Name, final String Value, StringBuffer Out)
-    {
-        AddNameValueItem( Name, Value, Out, false );
-    }
-
-    // add name value pair as json. values is string
-    private void AddNameValueItem( final String Name, final String Value, StringBuffer Out, boolean FinalItem)
-    {
-        Out.append("\n  \"" + Name + "\": \"" + Value + "\"");
-        AddComma( Out, FinalItem );
-    }
-
-    // add name value pair as json. values is int
-    private void AddNameValueItem( final String Name, final int Value, StringBuffer Out, boolean FinalItem )
-    {
-        Out.append("\n  \"" + Name + "\": " + Value);
-        AddComma( Out, FinalItem );
-    }
-
-    // add comma to stringbuffer based on param
-    private void AddComma( StringBuffer Out, boolean FinalElement )
-    {
-        if( FinalElement )
-        {
-            Out.append(",");
-        }
-    }
-
     // process error message
-    private void ProcessError( StringBuffer Output, final String Website, Exception E )
+    private void ProcessError( GetRequestResponse Output, final String Website, Exception E )
     {
         System.err.println( "\nFailed GET request for Url " + Website + "( " + E.toString() + " )!");
 
-        StringBuffer Element = new StringBuffer();
-
-        Element.append("\n{");
-        AddNameValueItem("Url", Website, Element);
-        AddNameValueItem("Error", E.toString(), Element, true);
-        Element.append("\n}");
-
-        // add to document
-        Output.append(Element);
+        Output.SetUrl(Website);
+        Output.SetError( E.toString() );
     }
 }
