@@ -1,8 +1,8 @@
 import java.util.Date;
 
-public class GetRequestResponse
+public class GetRequestResponseWrapper
 {
-    public GetRequestResponse()
+    public GetRequestResponseWrapper()
     {
         FDate = new Date();
         FUrl = new String();
@@ -11,7 +11,7 @@ public class GetRequestResponse
         FContentLength = 0;
     }
 
-    public GetRequestResponse(String UrlIn, int StatusCodeIn, int ContentLength, Date Date)
+    public GetRequestResponseWrapper(String UrlIn, int StatusCodeIn, int ContentLength, Date Date)
     {
         FUrl = UrlIn;
         FStatusCode = StatusCodeIn;
@@ -75,16 +75,16 @@ public class GetRequestResponse
         String Result = new String();
 
         Result += "\n{";
-        Result += "\n   " + CommonFunctions.AddNameValueItem("Url", FUrl);
+        Result += "\n   " + CommonFunctions.CreateNameValueItem("Url", FUrl);
         if( FError.compareTo("") == 0 )
         {
-            Result += "\n   " + CommonFunctions.AddNameValueItem("Status_Code", FStatusCode );
-            Result += "\n   " + CommonFunctions.AddNameValueItem("Content_Length", FContentLength);
-            Result += "\n   " + CommonFunctions.AddNameValueItem("Date", FDate.toString(), true);
+            Result += "\n   " + CommonFunctions.CreateNameValueItem("Status_Code", FStatusCode );
+            Result += "\n   " + CommonFunctions.CreateNameValueItem("Content_Length", FContentLength);
+            Result += "\n   " + CommonFunctions.CreateNameValueItem("Date", FDate.toString(), true);
         }
         else
         {
-            Result += "\n   " + CommonFunctions.AddNameValueItem("Error", FError, true);
+            Result += "\n   " + CommonFunctions.CreateNameValueItem("Error", FError, true);
         }
 
         Result +=  "\n}";

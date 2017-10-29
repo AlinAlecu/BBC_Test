@@ -1,41 +1,41 @@
 public class CommonFunctions
 {
     // add non ending name value pair as json. value is int
-    public static String AddNameValueItem( final String Name, final int Value)
+    public static String CreateNameValueItem(final String Name, final int Value)
     {
-        return AddNameValueItem( Name, Value, false );
+        return CreateNameValueItem( Name, Value, false );
     }
 
     // add non ending name value pair as json. value is string
-    public static String AddNameValueItem( final String Name, final String Value)
+    public static String CreateNameValueItem(final String Name, final String Value)
     {
-        return AddNameValueItem( Name, Value, false );
+        return CreateNameValueItem( Name, Value, false );
     }
 
     // add name value pair as json. values is string
-    public static String AddNameValueItem( final String Name, final String Value, boolean FinalItem)
+    public static String CreateNameValueItem(final String Name, final String Value, boolean FinalItem)
     {
         String Result = new String();
 
         Result += ("\"" + Name + "\": \"" + Value + "\"");
-        Result += AddComma( FinalItem );
+        Result += CreateComma( FinalItem );
 
         return Result;
     }
 
     // add name value pair as json. values is int
-    public static String AddNameValueItem( final String Name, final int Value, boolean FinalItem )
+    public static String CreateNameValueItem(final String Name, final int Value, boolean FinalItem )
     {
         String Result = new String();
 
         Result += "\"" + Name + "\": " + Value;
-        Result += AddComma( FinalItem );
+        Result += CreateComma( FinalItem );
 
         return Result;
     }
 
     // return comma based on param
-    private static String AddComma( boolean FinalElement )
+    private static String CreateComma(boolean FinalElement )
     {
         if( !FinalElement )
         {

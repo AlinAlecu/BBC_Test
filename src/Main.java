@@ -23,7 +23,7 @@ public class Main
                 Scanner Scan = new Scanner(System.in);
 
                 // list of response details
-                ArrayList<GetRequestResponse> ResponseList = new ArrayList<GetRequestResponse>();
+                ArrayList<GetRequestResponseWrapper> ResponseList = new ArrayList<GetRequestResponseWrapper>();
                 HashMap<Integer, Integer> StatusCodesMap = new HashMap<Integer, Integer>();
 
                 // while still parsing lines
@@ -33,9 +33,9 @@ public class Main
                     String Input = Scan.nextLine();
 
                     // create new response object
-                    GetRequestResponse CurrentResponse = new GetRequestResponse();
+                    GetRequestResponseWrapper CurrentResponse = new GetRequestResponseWrapper();
 
-                    // add new GetRequestResponse to store information in
+                    // add new GetRequestResponseWrapper to store information in
                     ResponseList.add( CurrentResponse);
 
                     // send Get request and populate storing object
@@ -76,11 +76,11 @@ public class Main
     }
 
     // checks if code is in map
-    private static void Output( ArrayList<GetRequestResponse> Response, HashMap<Integer, Integer> StatusCodesMap )
+    private static void Output(ArrayList<GetRequestResponseWrapper> Response, HashMap<Integer, Integer> StatusCodesMap )
     {
         // output results
         System.out.println("Results: ");
-        for(GetRequestResponse Element : Response)
+        for(GetRequestResponseWrapper Element : Response)
         {
             System.out.print( Element.toString() );
         }
@@ -93,8 +93,8 @@ public class Main
         {
             Map.Entry pair = (Map.Entry)CodesIterator.next();
             Summary += "\n  {";
-            Summary += "\n      " + CommonFunctions.AddNameValueItem("Status_Code", (Integer)pair.getKey());
-            Summary += "\n      " + CommonFunctions.AddNameValueItem("Number_of_responses", (Integer)pair.getValue(), true);
+            Summary += "\n      " + CommonFunctions.CreateNameValueItem("Status_Code", (Integer)pair.getKey());
+            Summary += "\n      " + CommonFunctions.CreateNameValueItem("Number_of_responses", (Integer)pair.getValue(), true);
             Summary += "\n  }";
             if( CodesIterator.hasNext() )
             {
@@ -124,7 +124,7 @@ public class Main
     }
 
     // HTTP GET request
-    private void sendGet( String Website, GetRequestResponse Output )
+    private void sendGet( String Website, GetRequestResponseWrapper Output )
     {
         try
         {
@@ -157,7 +157,7 @@ public class Main
     }
 
     // process error message
-    private void ProcessError( GetRequestResponse Output, final String Website, Exception E )
+    private void ProcessError(GetRequestResponseWrapper Output, final String Website, Exception E )
     {
         System.err.println( "Failed GET request for Url " + Website + "( " + E.toString() + " )!");
 
